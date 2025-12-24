@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../services/api_service.dart';
+import 'login_screen.dart'; // NEW IMPORT: Needed to go back to Login
 
 class BallotScreen extends StatefulWidget {
   final String token;
@@ -32,10 +33,13 @@ class _BallotScreenState extends State<BallotScreen> {
   bool _isLoading = false;
   String? _selectedCandidateId;
 
-  // --- LOGOUT FUNCTION ---
+  // --- UPDATED LOGOUT FUNCTION ---
   void _handleLogout() {
-    // Navigate back to Login Screen cleanly
-    Navigator.of(context).popUntil((route) => route.isFirst);
+    // Force navigate to LoginScreen and remove all previous screens
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(builder: (context) => const LoginScreen()),
+      (route) => false, // This deletes the history so you can't go back
+    );
     
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
@@ -114,8 +118,7 @@ class _BallotScreenState extends State<BallotScreen> {
         centerTitle: true,
         backgroundColor: Colors.transparent, 
         elevation: 0,
-        automaticallyImplyLeading: false, // Hides the back button (Security)
-        // --- THIS IS THE LOGOUT BUTTON ---
+        automaticallyImplyLeading: false, // Hides back button
         actions: [
           Container(
             margin: const EdgeInsets.only(right: 15),
@@ -126,7 +129,7 @@ class _BallotScreenState extends State<BallotScreen> {
             child: IconButton(
               icon: const Icon(Icons.power_settings_new, color: Colors.white),
               tooltip: 'Logout',
-              onPressed: _handleLogout,
+              onPressed: _handleLogout, // Calls the new navigation fix
             ),
           ),
         ],

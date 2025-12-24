@@ -33,7 +33,8 @@ public class AuthController {
         Voter voter = voterRepository.findById(request.getVoterId())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid Voter ID"));
 
-        // 2. Mock Face Match (In real world, verify request.faceHash matches voter.faceHash)
+        // 2. Mock Face Match (In real world, verify request.faceHash matches
+        // voter.faceHash)
         // Ignoring actual hash check for prototype logic flow
 
         // 3. Status Check
@@ -41,16 +42,16 @@ public class AuthController {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "User has already voted.");
         }
 
-        // 4. Update Status (Mark as Voted)
-        voter.setHasVoted(true);
-        voterRepository.save(voter);
+        // --- BUG FIXED: Removed logic that marked user as voted immediately ---
+        // Ideally, you should set 'hasVoted = true' inside your VoteController when
+        // they actually cast the vote.
 
-        // 5. Generate One-Time Token
+        // 4. Generate One-Time Token
         String tokenUuid = UUID.randomUUID().toString();
         ActiveToken token = new ActiveToken(tokenUuid, LocalDateTime.now().plusMinutes(15));
         activeTokenRepository.save(token);
 
-        // 6. Return Token (NO User ID)
+        // 5. Return Token (NO User ID)
         return ResponseEntity.ok(new TokenResponse(tokenUuid));
     }
 
@@ -63,6 +64,9 @@ public class AuthController {
     @Data
     static class TokenResponse {
         private String token;
-        public TokenResponse(String token) { this.token = token; }
+
+        public TokenResponse(String token) {
+            this.token = token;
+        }
     }
 }

@@ -37,7 +37,6 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  // --- LOGIC: CHECK ATTEMPTS ---
   Future<void> _updateRemainingAttempts() async {
     final voterId = _voterIdController.text.trim();
     if (voterId.isEmpty) return;
@@ -51,7 +50,6 @@ class _LoginScreenState extends State<LoginScreen> {
     });
   }
 
-  // --- LOGIC: LOGIN FLOW ---
   Future<void> _handleLogin() async {
     await _updateRemainingAttempts();
     final voterId = _voterIdController.text.trim();
@@ -103,8 +101,14 @@ class _LoginScreenState extends State<LoginScreen> {
       if (!mounted) return;
       String errorMessage = e.toString();
 
+      // --- FIXED ERROR LOGIC IS HERE ---
       if (errorMessage.contains("403")) {
-        _showAttractiveDialog("Vote Already Cast", "You have already voted. Access locked.", Colors.deepOrange, Icons.how_to_vote_rounded);
+        _showAttractiveDialog(
+          "Access Denied", 
+          "Login failed. This could be because:\n\n1. You have already voted.\n2. You are still logged in on another screen (Session Active).", 
+          Colors.deepOrange, 
+          Icons.lock_clock_rounded
+        );
       } else if (errorMessage.contains("SocketException")) {
         _showAttractiveDialog("Connection Error", "No Internet Connection.", Colors.red, Icons.signal_wifi_off_rounded);
       } else {
@@ -220,7 +224,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       
                       const SizedBox(height: 25),
                       
-                      // --- NEW VERY ATTRACTIVE COUNTER (SHIELD DESIGN) ---
+                      // --- SHIELD COUNTER ---
                       Container(
                         padding: const EdgeInsets.all(15),
                         decoration: BoxDecoration(
@@ -243,8 +247,6 @@ class _LoginScreenState extends State<LoginScreen> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: List.generate(3, (index) {
-                                // Logic: Show shields. 
-                                // 0,1,2 (All 3) active if remaining is 3.
                                 bool isActive = index < _remainingAttempts;
                                 Color shieldColor = _remainingAttempts > 1 ? Colors.green : Colors.red;
                                 
@@ -274,8 +276,6 @@ class _LoginScreenState extends State<LoginScreen> {
                           ],
                         ),
                       ),
-                      // --- END NEW DESIGN ---
-                      
                     ],
                   ),
                 ),
