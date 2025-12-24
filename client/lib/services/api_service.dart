@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:crypto/crypto.dart';
 
 class ApiService {
-  static const String baseUrl = 'http://192.168.0.108:8080/api';
+  static const String baseUrl = 'https://online-voting-system-backend-server.onrender.com/api';
   static const String _secretKey = 'SECRET_KEY_12345'; // Must match server key
 
   String _generateSignature(String body) {
